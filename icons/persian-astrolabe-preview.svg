@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">几何化半幅波斯星盘</title>
+  <desc id="desc">黑色方形底面上的白金色半圆星盘，以同心刻度、星针和偏心黄道环组成。</desc>
+  <rect width="512" height="512" rx="52" fill="#080a09"/>
+  <g transform="translate(0 8) scale(1 1.16)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M226 78a30 30 0 0 1 60 0v22h-16V80a14 14 0 0 0-28 0v20h-16Z" stroke="#e8d9a8" stroke-width="10"/>
+    <path d="M256 100C139 100 44 195 44 312v52h424v-52c0-117-95-212-212-212Z" stroke="#f3f4f1" stroke-width="16"/>
+    <path d="M256 126c-103 0-186 83-186 186v26h372v-26c0-103-83-186-186-186Z" stroke="#e8d9a8" stroke-width="5"/>
+    <path d="M256 158c-85 0-154 69-154 154M410 312c0-85-69-154-154-154M136 312a120 120 0 0 1 240 0M174 312a82 82 0 0 1 164 0" stroke="#f3f4f1" stroke-width="4" opacity=".78"/>
+    <path d="M256 126v238M104 190l304 174M408 190 104 364M70 312h372M150 144l212 220M362 144 150 364" stroke="#f3f4f1" stroke-width="3" opacity=".52"/>
+    <ellipse cx="278" cy="258" rx="116" ry="72" transform="rotate(-22 278 258)" stroke="#e8d9a8" stroke-width="8"/>
+    <path d="M256 312 194 170l75 89 112-68-70 112 93 29-115 10-33 22Z" stroke="#f3f4f1" stroke-width="7"/>
+    <path d="m194 170 7 17 18 1-14 11 5 18-16-10-15 10 5-18-14-11 18-1ZM381 191l5 12 13 1-10 8 3 13-11-7-12 7 4-13-11-8 14-1ZM404 332l4 10 11 1-9 7 3 11-9-6-10 6 3-11-9-7 12-1Z" fill="#e8d9a8" stroke="none"/>
+    <circle cx="256" cy="312" r="13" fill="#080a09" stroke="#e8d9a8" stroke-width="7"/>
+    <path d="M44 364h424M82 390h348M112 418h288" stroke="#f3f4f1" stroke-width="12"/>
+    <g stroke="#e8d9a8" stroke-width="6">
+      <path d="M68 278h18M78 238l17 5M94 201l16 9M120 169l14 12M154 144l11 15M194 126l7 17M236 116l2 18M276 116l-2 18M318 126l-7 17M358 144l-11 15M392 169l-14 12M418 201l-16 9M434 238l-17 5M444 278h-18"/>
+    </g>
+  </g>
+</svg>

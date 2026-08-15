@@ -1,0 +1,13 @@
+{
+  "name": "日迹",
+  "short_name": "日迹",
+  "description": "场景式生活投入与时间分布记录",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "lang": "zh-CN",
+  "display": "standalone",
+  "background_color": "#080a09",
+  "theme_color": "#080a09",
+  "icons": [{"src":"icons/sundial.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

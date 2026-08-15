@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">中式赤道日晷</title>
+  <rect width="64" height="64" rx="8" fill="#080a09"/>
+  <g fill="none" stroke="#f3f4f1" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="rotate(-12 32 27)">
+      <ellipse cx="32" cy="27" rx="20" ry="11" stroke-width="3"/>
+      <ellipse cx="32" cy="27" rx="15.5" ry="7.5" stroke-width="1.2" opacity=".72"/>
+      <path d="M14 24h4M18 18l3 3M27 16l1 4M37 16l-1 4M46 20l-3 3M50 27h-4M19 33l4-2M43 33l3 2" stroke-width="1.6"/>
+      <path d="M32 27 28 7l8 20Z" fill="#f3f4f1" stroke="none"/>
+      <circle cx="32" cy="27" r="2.2" fill="#080a09" stroke="#f3f4f1" stroke-width="1.5"/>
+    </g>
+    <path d="M27 38v7h10v-9M22 45h20l4 8H18l4-8ZM13 53h38" stroke-width="3"/>
+  </g>
+</svg>

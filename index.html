@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080a09">
+  <title>日迹 - 场景式生活记录</title>
+  <link rel="icon" href="icons/sundial.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark"><img src="icons/sundial.svg" alt=""></span><span>日迹</span></div>
+      <nav class="nav" aria-label="主导航">
+        <button class="nav-item active" data-page="scene"><span>⌂</span>当前场景</button>
+        <button class="nav-item" data-page="timeline"><span>▤</span>时间记录</button>
+        <button class="nav-item" data-page="summary"><span>◫</span>月度汇总</button>
+        <button class="nav-item" data-page="editor"><span>⌘</span>场景管理</button>
+      </nav>
+      <div class="sync-state"><span></span>已保存在此设备</div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div class="region-wrap">
+          <label for="regionSelect">所在地区</label>
+          <div class="region-combobox">
+            <input id="regionSelect" autocomplete="off" placeholder="选择或输入地区" aria-autocomplete="list" aria-controls="regionOptions" aria-expanded="false">
+            <button type="button" class="region-toggle" id="regionToggle" aria-label="显示已保存地区" aria-expanded="false">⌄</button>
+            <div class="region-options hidden" id="regionOptions" role="listbox" aria-label="已保存地区"></div>
+          </div>
+          <button class="region-confirm" id="regionConfirm" title="切换或创建地区">确认</button>
+          <button class="icon-btn" id="addRegion" title="新增地区" aria-label="新增地区">＋</button>
+        </div>
+        <div class="clock" id="clock"></div>
+        <button class="icon-btn" id="resetDemo" title="恢复演示数据" aria-label="恢复演示数据">↻</button>
+        <button class="icon-btn" id="openDataManager" title="数据管理" aria-label="数据管理">⌑</button>
+      </header>
+
+      <section class="page active" id="scenePage">
+        <div class="scene-layout">
+          <div class="scene-main">
+            <div class="eyebrow" id="scenePath">上海 / 家 / 卧室 / 书桌</div>
+            <h1 id="sceneTitle">书桌</h1>
+            <p class="scene-copy" id="sceneCopy">窗外的城市还没有安静下来。桌面已经收拾好，现在准备做什么？</p>
+            <div class="option-list" id="optionList"></div>
+          </div>
+        </div>
+        <div class="current-timer timer-dock hidden" id="currentTimer">
+          <span>正在进行</span><strong id="timerName">预习概率论</strong><b id="timerDisplay">00:00:00</b>
+          <button class="primary" id="stopTimer">结束并记录</button>
+        </div>
+      </section>
+
+      <section class="page" id="timelinePage">
+        <div class="page-heading">
+          <div><div class="eyebrow">时间记录</div><h1>一天是怎样度过的</h1></div>
+          <div class="date-control"><button id="prevDay" aria-label="前一天">‹</button><input type="date" id="timelineDate"><button id="nextDay" aria-label="后一天">›</button></div>
+        </div>
+        <div class="timeline-summary" id="timelineSummary"></div>
+        <div class="timeline-card">
+          <div class="hour-labels" id="hourLabels"></div>
+          <div class="time-track" id="timeTrack"></div>
+          <div class="legend" id="legend"></div>
+        </div>
+        <div class="records-table-wrap">
+          <div class="section-title"><h2>当日流水</h2><button class="secondary" id="addRecord">同步外部记录</button></div>
+          <div class="records-table" id="recordsTable"></div>
+        </div>
+      </section>
+
+      <section class="page" id="summaryPage">
+        <div class="page-heading">
+          <div><div class="eyebrow">月度汇总</div><h1>八月的时间账本</h1></div>
+          <select id="monthSelect"><option value="2026-08">2026年8月</option></select>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-stat"><span>记录覆盖率</span><strong>38%</strong><small>较上月 +6%</small></div>
+          <div class="summary-stat"><span>已记录时间</span><strong>121.5h</strong><small>本月 14 天</small></div>
+          <div class="summary-stat"><span>平均睡眠</span><strong>7h 26m</strong><small>质量评分 81</small></div>
+        </div>
+        <div class="distribution">
+          <div class="section-title"><div><h2>时间分布</h2><p>占已记录时间的比例</p></div><div class="segmented"><button class="active">已记录</button><button>自然时间</button></div></div>
+          <div class="distribution-body" id="distributionBody"></div>
+        </div>
+      </section>
+
+      <section class="page" id="editorPage">
+        <div class="page-heading"><div><div class="eyebrow">场景管理</div><h1>构建你的生活地图</h1></div><button class="primary" id="newScene">＋ 新建场景</button></div>
+        <div class="editor-layout">
+          <div class="tree-panel">
+            <div class="panel-title"><strong>上海</strong><button title="更多" aria-label="更多场景操作">•••</button></div>
+            <div class="scene-tree" id="sceneTree"></div>
+          </div>
+          <div class="edit-panel">
+            <div class="edit-head"><div><span>正在编辑</span><h2 id="editName">书桌</h2></div><div><button class="icon-btn" title="复制分支" aria-label="复制分支">⧉</button><button class="icon-btn danger" id="deleteScene" title="删除场景" aria-label="删除场景">⌫</button></div></div>
+            <label>场景名称<input id="sceneNameInput" value="书桌"></label>
+            <label>场景图标<select id="sceneIconInput"><option value="home">家</option><option value="bed">卧室／床</option><option value="desk">书桌</option><option value="bath">浴室</option><option value="sofa">客厅</option><option value="pin">地点</option></select></label>
+            <label>场景描述<textarea id="sceneDescInput" rows="3">窗外的城市还没有安静下来。桌面已经收拾好，现在准备做什么？</textarea></label>
+            <div class="section-title compact"><h3>可选行动</h3><button class="secondary" id="addAction">＋ 添加行动</button></div>
+            <div class="action-editor" id="actionEditor"></div>
+            <div class="section-title compact"><h3>场景联通</h3><button class="secondary" id="addConnection">＋ 添加联通</button></div>
+            <div class="connection-editor" id="connectionEditor"></div>
+            <div class="cycle-note"><span>↻</span><div><strong>允许循环路径</strong><p>“休息一下”会返回当前场景。循环不会阻止保存，但会在路径旁显示提示。</p></div></div>
+            <button class="primary save-btn" id="saveScene">保存修改</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="移动端导航">
+    <button class="active" data-page="scene"><span>⌂</span>场景</button>
+    <button data-page="timeline"><span>▤</span>记录</button>
+    <button data-page="summary"><span>◫</span>汇总</button>
+    <button data-page="editor"><span>⌘</span>管理</button>
+  </nav>
+
+  <dialog id="actionDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">开始行动</span><h2 id="dialogActionName">预习概率论</h2>
+      <div class="mode-tabs"><button type="button" class="active" data-mode="timer">正念计时</button><button type="button" data-mode="pomodoro">番茄钟</button><button type="button" data-mode="manual">手动填写</button></div>
+      <div class="mode-panel" id="modePanel"></div>
+      <button type="button" class="primary full" id="confirmAction">开始计时</button>
+    </form>
+  </dialog>
+
+  <dialog id="sleepDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">睡眠记录</span><h2 id="sleepDialogTitle">准备入眠</h2>
+      <p id="sleepDialogText">入眠后将进入睡眠状态，起床前只能记录夜间活动。</p>
+      <label id="sleepQualityWrap" class="hidden">睡眠质量评分（可留空）<input id="sleepQuality" type="number" min="0" max="100" placeholder="例如 82"></label>
+      <button type="button" class="primary full" id="confirmSleep">确认入眠</button>
+    </form>
+  </dialog>
+  <dialog id="actionEditDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">编辑行动</span><h2 id="editActionHeading">行动设置</h2>
+      <label>行动名称<input id="editActionName"></label>
+      <label>Tag<input id="editActionTag" placeholder="例如：阅读、运动、游戏"></label>
+      <label>时间性质<select id="editActionNature"><option value="positive">正念活动</option><option value="neutral">中性活动</option><option value="sleep">睡眠</option><option value="passage">场景通道</option></select></label>
+      <label>记录方式<select id="editActionRecordMode"><option value="external">仅手动同步</option><option value="internal">日迹计时</option><option value="none">不记录时间</option></select></label>
+      <label>目标场景<select id="editActionTarget"></select></label>
+      <div class="dialog-actions"><button type="button" class="secondary danger" id="deleteAction">删除行动</button><button type="button" class="primary" id="saveActionEdit">保存</button></div>
+    </form>
+  </dialog>
+  <dialog id="connectionDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">场景联通</span><h2>添加移动路线</h2>
+      <label>目标场景<select id="connectionTarget"></select></label>
+      <label>前往名称<input id="connectionForward" placeholder="例如：出门"></label>
+      <label class="check-label"><input type="checkbox" id="connectionBoth" checked> 创建双向联通</label>
+      <label>返回名称<input id="connectionBack" placeholder="例如：回家"></label>
+      <button type="button" class="primary full" id="saveConnection">保存联通</button>
+    </form>
+  </dialog>
+  <dialog id="syncDialog">
+    <form method="dialog" class="sync-form">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">每日同步</span><h2>录入外部正念记录</h2>
+      <div class="sync-meta"><label>日期<input type="date" id="syncDate"></label><label>来源<input id="syncSource" value="其他软件"></label></div>
+      <div id="syncRows"></div>
+      <button type="button" class="secondary" id="addSyncRow">＋ 添加一行</button>
+      <button type="button" class="primary full" id="saveSync">检查并保存</button>
+    </form>
+  </dialog>
+  <dialog id="deleteSceneDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">删除场景</span><h2 id="deleteSceneName">删除场景</h2>
+      <p>请选择如何处理它的子场景。历史流水不会被删除。</p>
+      <label>子场景处理<select id="deleteChildrenMode"><option value="move">移动到上一层</option><option value="all">连同子场景一起删除</option></select></label>
+      <button type="button" class="primary full" id="confirmDeleteScene">确认删除</button>
+    </form>
+  </dialog>
+  <dialog id="dataDialog">
+    <form method="dialog" class="data-form">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">数据管理</span><h2>备份与迁移</h2>
+      <div class="data-stats" id="dataStats"></div>
+      <div class="data-actions"><button type="button" class="secondary" id="exportJson">导出 JSON</button><button type="button" class="secondary" id="exportCsv">导出 CSV</button><button type="button" class="secondary" id="chooseImport">导入 JSON</button><button type="button" class="secondary" id="createBackup">立即备份</button></div>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <div class="import-preview hidden" id="importPreview"><strong>待导入数据</strong><p id="importSummary"></p><button type="button" class="primary" id="applyImport">确认覆盖当前数据</button></div>
+      <div class="backup-list"><h3>本地备份</h3><div id="backupList"></div></div>
+    </form>
+  </dialog>
+  <dialog id="recordEditDialog">
+    <form method="dialog" class="record-edit-form">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">流水记录</span><h2>编辑投入时间</h2>
+      <div class="record-edit-grid">
+        <label>日期<input type="date" id="recordEditDate"></label>
+        <label>地区<input id="recordEditRegion" readonly></label>
+        <label>开始时间<input type="time" id="recordEditStart"></label>
+        <label>结束时间<input type="time" id="recordEditEnd"></label>
+      </div>
+      <label>行为名称<input id="recordEditName"></label>
+      <label>所属场景<select id="recordEditScene"></select></label>
+      <label>时间性质<select id="recordEditNature"><option value="positive">正念</option><option value="neutral">中性</option><option value="sleep">睡眠</option></select></label>
+      <label>Tag<input id="recordEditTag"></label>
+      <label>来源<input id="recordEditSource" placeholder="日迹计时或外部软件"></label>
+      <div class="dialog-actions"><button type="button" class="secondary danger" id="deleteRecord">删除记录</button><button type="button" class="primary" id="saveRecordEdit">保存修改</button></div>
+    </form>
+  </dialog>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 5v16M21 12v9M3 17h18M7 12V8h5a4 4 0 0 1 4 4M3 12h18"/></symbol>
+    <symbol id="i-desk" viewBox="0 0 24 24"><path d="M4 5h16v9H4zM7 14v6M17 14v6M4 10h16"/></symbol>
+    <symbol id="i-bath" viewBox="0 0 24 24"><path d="M4 13h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM7 13V6a3 3 0 0 1 6 0M4 20l-1 2M20 20l1 2"/></symbol>
+    <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5 12V9a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3M4 11a2 2 0 0 0-2 2v5h20v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-2-2M5 18v2M19 18v2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></symbol>
+  </svg>
+  <div class="toast" id="toast"></div>
+  <script src="data-manager.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
