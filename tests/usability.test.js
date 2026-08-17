@@ -43,6 +43,7 @@ assert.match(cloud, /on_conflict=user_id/, 'cloud writes must use a deterministi
 assert.doesNotMatch(cloud, /service_role|sb_secret_/, 'browser code must never contain a Supabase secret key');
 assert.match(html, /id="cloudSummary" role="status" aria-live="polite"/, 'cloud auth feedback needs an announced inline status');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
+assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 
 function rgb(hex) {
   return [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);

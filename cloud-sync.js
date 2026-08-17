@@ -13,7 +13,7 @@
   function headers(token,extra={}){return {apikey:SUPABASE_KEY,...(token?{Authorization:`Bearer ${token}`}:{}) ,...extra}}
   async function request(path,options={}){
     const response=await fetch(`${SUPABASE_URL}${path}`,options),text=await response.text();let body=null;try{body=text?JSON.parse(text):null}catch{body=text}
-    if(!response.ok){const message=body?.msg||body?.message||body?.error_description||`云端请求失败（${response.status}）`;const error=new Error(message);error.status=response.status;throw error}
+    if(!response.ok){const message=body?.msg||body?.message||body?.error_description||`云端请求失败（${response.status}）`;const error=new Error(message);error.status=response.status;error.code=body?.code||'';throw error}
     return body;
   }
   async function authenticate(email,password,mode){
