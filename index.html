@@ -50,7 +50,7 @@
         </div>
         <div class="current-timer timer-dock hidden" id="currentTimer">
           <span id="timerState">正在进行</span><strong id="timerName">预习概率论</strong><small id="timerMeta"></small><b id="timerDisplay">00:00:00</b>
-          <div class="timer-controls"><button class="secondary" id="pauseTimer">暂停</button><button class="secondary danger" id="cancelTimer">取消</button><button class="primary" id="stopTimer">结束并记录</button></div>
+          <div class="timer-controls"><button class="secondary" id="pauseTimer">暂停</button><button class="secondary" id="adjustTimer">校正开始</button><button class="secondary danger" id="cancelTimer">取消</button><button class="primary" id="stopTimer">结束并记录</button></div>
         </div>
       </section>
 
@@ -147,6 +147,15 @@
       <div class="dialog-actions"><button type="button" class="secondary danger" id="discardTimer">放弃且不保存</button><button type="button" class="primary" id="saveCancelledTimer">保存已投入时间</button></div>
     </form>
   </dialog>
+  <dialog id="timerAdjustDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">计时会话</span><h2>校正开始时间</h2>
+      <p>只调整本次会话的第一个活动片段；暂停与继续产生的其他片段保持不变。</p>
+      <label>开始时间<input id="timerStartInput" type="datetime-local"></label>
+      <button type="button" class="primary full" id="saveTimerStart">保存校正</button>
+    </form>
+  </dialog>
   <dialog id="pomodoroDialog">
     <form method="dialog">
       <span class="dialog-label">番茄钟到时</span><h2 id="pomodoroHeading">本轮专注已完成</h2>
@@ -206,6 +215,7 @@
         <div class="cloud-heading"><div><h3>跨设备同步</h3><p id="cloudSummary" role="status" aria-live="polite">尚未连接云端账户</p></div><button type="button" class="secondary hidden" id="syncNow">立即同步</button></div>
         <div class="cloud-login" id="cloudLogin"><label>邮箱<input type="email" id="cloudEmail" autocomplete="email"></label><label>密码<input type="password" id="cloudPassword" autocomplete="current-password" minlength="8"></label><div><button type="button" class="secondary" id="cloudSignup">创建账户</button><button type="button" class="primary" id="cloudSignin">登录</button></div></div>
         <div class="cloud-account hidden" id="cloudAccount"><span id="cloudUser"></span><button type="button" class="secondary" id="cloudSignout">退出云同步</button></div>
+        <div class="clock-audit"><div><strong>时间校准</strong><p id="clockAuditSummary">尚未完成云端校时</p></div><button type="button" class="secondary" id="recalibrateClock">重新校准</button></div>
         <div class="scene-conflict hidden" id="sceneConflict" role="alert"><strong>检测到场景结构冲突</strong><p>两台设备修改了同一版场景。请选择要保留的版本；处理前会自动创建恢复备份。</p><div><button type="button" class="secondary" id="keepLocalScenes">保留此设备</button><button type="button" class="primary" id="useCloudScenes">采用云端版本</button></div></div>
         <div class="scene-conflict hidden" id="timerConflict" role="alert"><strong>检测到计时会话冲突</strong><p>两台设备在同一计时版本上进行了不同操作。请选择继续使用的会话，也可以先保存另一设备已经投入的片段。</p><div><button type="button" class="secondary" id="keepLocalTimer">保留此设备</button><button type="button" class="secondary" id="saveBothTimers">保存云端片段并保留本机</button><button type="button" class="primary" id="useCloudTimer">采用云端会话</button></div></div>
       </section>

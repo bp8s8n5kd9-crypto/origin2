@@ -69,6 +69,12 @@ assert.match(html, /id="recordConflictList"/, 'data management needs a record co
 assert.match(html, /id="timelineConflictSummary" role="alert"/, 'daily views need an overlap warning');
 assert.match(html, /id="monthlyConflictSummary" role="alert"/, 'monthly summaries need an overlap warning');
 assert.match(app, /RijiData\.findRecordOverlaps/, 'the application must audit merged records for overlaps');
+assert.match(html, /id="clockAuditSummary"/, 'data management needs visible clock calibration details');
+assert.match(html, /id="recalibrateClock"/, 'clock calibration needs a manual retry');
+assert.match(html, /id="timerStartInput"[^>]*type="datetime-local"/, 'active timer start time must be editable');
+assert.match(app, /first\.start=corrected/, 'timer start correction must update the first active segment');
+assert.match(app, /before-overlap-resolution/, 'quick overlap fixes must create a recovery backup');
+assert.match(app, /data-overlap-action/, 'same-day overlaps need explicit quick actions');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 
