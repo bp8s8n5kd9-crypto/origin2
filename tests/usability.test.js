@@ -36,6 +36,11 @@ assert.match(html, /id="manageRegions"/, 'scene management needs a region manage
 assert.match(html, /id="copySceneBranch"/, 'scene branches need a copy command');
 assert.match(app, /before-region-permanent-delete/, 'permanent region deletion must create a recovery backup');
 assert.match(app, /RijiData\.copySceneBranch/, 'branch copying must use the tested structural copier');
+assert.match(html, /id="recordBrowserDialog"/, 'records need a cross-date search and batch management surface');
+assert.match(app, /RijiData\.filterRecords/, 'record browsing must use the tested filter helper');
+assert.match(app, /before-batch-record-delete/, 'batch deletion must create a recovery backup');
+assert.match(app, /state\.deletedRecordIds=.*deleted/, 'batch deletion must create cloud tombstones');
+assert.match(app, /map\(record=>record\.id\)/, 'batch tombstones must preserve original record id types');
 assert.match(app, /state\.records\|\|\[\]\)\.map\(record=>record\.region\)/, 'regions from historical records must be recovered');
 assert.match(html, /class="brand-mark"><img src="icons\/sundial\.svg"/, 'in-app brand must use the shared sundial icon');
 assert.match(icon, /中式赤道日晷/, 'the sundial asset needs a descriptive accessible title');

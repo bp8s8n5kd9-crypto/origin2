@@ -112,4 +112,11 @@ assert.equal(targetTree[copied.rootKey].children.length,1);
 assert.equal(targetMap[copied.rootKey].options.length,1);
 assert.equal(targetMap[copied.rootKey].options[0].target,targetTree[copied.rootKey].children[0]);
 
+const filtered=data.filterRecords([
+  {id:'1',date:'2026-08-10',start:'09:00',name:'概率论',tag:'学习',region:'上海',timeNature:'positive'},
+  {id:'2',date:'2026-08-12',start:'22:00',name:'游戏',tag:'放松',region:'杭州',timeNature:'neutral'},
+  {id:'3',date:'2026-08-11',start:'08:00',name:'阅读',source:'外部软件',region:'上海',timeNature:'positive'}
+],{from:'2026-08-10',to:'2026-08-11',region:'上海',nature:'positive',query:'外部'});
+assert.deepEqual(filtered.map(record=>record.id),['3']);
+
 console.log('data-manager tests passed');

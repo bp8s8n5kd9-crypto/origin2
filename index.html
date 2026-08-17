@@ -67,7 +67,7 @@
           <div class="legend" id="legend"></div>
         </div>
         <div class="records-table-wrap">
-          <div class="section-title"><h2>当日流水</h2><button class="secondary" id="addRecord">同步外部记录</button></div>
+          <div class="section-title"><h2>当日流水</h2><div class="section-actions"><button class="secondary" id="browseRecords">查找流水</button><button class="secondary" id="addRecord">同步外部记录</button></div></div>
           <div class="records-table" id="recordsTable"></div>
         </div>
       </section>
@@ -269,6 +269,28 @@
       <label>来源<input id="recordEditSource" placeholder="日迹计时或外部软件"></label>
       <label class="hidden" id="recordEditQualityWrap">睡眠质量（0–100，可留空）<input id="recordEditQuality" type="number" min="0" max="100"></label>
       <div class="dialog-actions"><button type="button" class="secondary danger" id="deleteRecord">删除记录</button><button type="button" class="primary" id="saveRecordEdit">保存修改</button></div>
+    </form>
+  </dialog>
+  <dialog id="recordBrowserDialog">
+    <form method="dialog" class="record-browser-form">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">流水检索</span><h2>查找与整理投入记录</h2>
+      <div class="record-filter-grid">
+        <label>从<input type="date" id="recordFilterFrom"></label>
+        <label>到<input type="date" id="recordFilterTo"></label>
+        <label>地区<select id="recordFilterRegion"></select></label>
+        <label>时间性质<select id="recordFilterNature"><option value="all">全部</option><option value="positive">正念</option><option value="neutral">中性</option><option value="sleep">睡眠</option></select></label>
+      </div>
+      <label>关键词<input id="recordFilterQuery" type="search" placeholder="行为、Tag、场景或来源"></label>
+      <div class="record-browser-summary"><span id="recordBrowserCount">0 条记录</span><button type="button" class="secondary" id="selectVisibleRecords">选择全部结果</button></div>
+      <div class="record-browser-results" id="recordBrowserResults"></div>
+      <div class="batch-record-actions hidden" id="batchRecordActions">
+        <strong id="selectedRecordCount">已选择 0 条</strong>
+        <select id="batchRecordNature"><option value="">不修改性质</option><option value="positive">改为正念</option><option value="neutral">改为中性</option><option value="sleep">改为睡眠</option></select>
+        <input id="batchRecordTag" placeholder="统一 Tag（留空则不修改）">
+        <button type="button" class="secondary" id="applyBatchRecordEdit">应用修改</button>
+        <button type="button" class="secondary danger" id="deleteBatchRecords">删除所选</button>
+      </div>
     </form>
   </dialog>
   <svg class="icon-sprite" aria-hidden="true">

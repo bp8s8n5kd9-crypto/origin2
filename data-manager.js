@@ -49,6 +49,16 @@
     const byRegion=new Map();(records||[]).forEach(record=>{const day=new Date(`${record.date}T00:00:00`).getTime(),start=day+timeMinutes(record.start)*60000;let end=day+timeMinutes(record.end)*60000;if(end<=start)end+=24*60*60000;const region=record.region||'上海',items=byRegion.get(region)||[];items.push({record,start,end});byRegion.set(region,items)});
     const overlaps=[];byRegion.forEach((items,region)=>{items.sort((a,b)=>a.start-b.start||a.end-b.end);for(let i=0;i<items.length;i++){for(let j=i+1;j<items.length&&items[j].start<items[i].end;j++){const minutes=Math.round((Math.min(items[i].end,items[j].end)-items[j].start)/60000);if(minutes>0)overlaps.push({region,minutes,first:clone(items[i].record),second:clone(items[j].record)})}}});return overlaps;
   }
+  function filterRecords(records,filters={}){
+    const query=String(filters.query||'').trim().toLocaleLowerCase(),from=filters.from||'',to=filters.to||'',region=filters.region||'',nature=filters.nature||'';
+    return (records||[]).filter(record=>{
+      if(from&&record.date<from)return false;if(to&&record.date>to)return false;
+      if(region&&region!=='all'&&(record.region||'上海')!==region)return false;
+      const recordNature=record.timeNature||(record.category==='睡眠'?'sleep':record.category==='娱乐'?'neutral':'positive');if(nature&&nature!=='all'&&recordNature!==nature)return false;
+      if(query&&!`${record.name||''} ${record.tag||''} ${record.path||''} ${record.source||''}`.toLocaleLowerCase().includes(query))return false;
+      return true;
+    }).sort((a,b)=>b.date.localeCompare(a.date)||b.start.localeCompare(a.start));
+  }
   function validateTimeWindow(date,start,end,now=new Date()){
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')||!/^\d{2}:\d{2}$/.test(start||'')||!/^\d{2}:\d{2}$/.test(end||''))return'请填写完整有效的日期和时间';
     const today=localDate(now),startMinutes=timeMinutes(start),endMinutes=timeMinutes(end),nowMinutes=now.getHours()*60+now.getMinutes();
@@ -110,5 +120,5 @@
     else timerConflict=local.sync.timerConflict||remote.sync.timerConflict||null;
     merged.activeTimer=clone(timerSource.activeTimer);merged.records=[...records.values()];merged.deletedRecordIds=deleted;merged.meta={createdAt:[local.meta.createdAt,remote.meta.createdAt].sort()[0],updatedAt:new Date(Math.max(localStamp,remoteStamp)).toISOString(),migratedFrom:Math.min(local.meta.migratedFrom||SCHEMA_VERSION,remote.meta.migratedFrom||SCHEMA_VERSION)};merged.sync={...older.sync,...newer.sync,revision:Math.max(local.sync.revision||0,remote.sync.revision||0)+1,sceneRevision:Math.max(localSceneRevision,remoteSceneRevision),sceneConflict,timerRevision:Math.max(localTimerRevision,remoteTimerRevision),timerConflict,lastSyncedAt:new Date().toISOString()};validate(merged);return merged;
   }
-  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,findRecordOverlaps,copySceneBranch,envelope,parseImport,createBackup,backups,restore,merge,clone};
+  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,findRecordOverlaps,filterRecords,copySceneBranch,envelope,parseImport,createBackup,backups,restore,merge,clone};
 })();
