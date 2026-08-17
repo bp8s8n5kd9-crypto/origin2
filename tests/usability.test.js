@@ -57,6 +57,14 @@ assert.match(html, /id="timerConflict" role="alert"/, 'timer conflicts need an e
 assert.match(app, /timerRevision=.*timerRevision.*\+1/, 'timer changes must advance their own sync revision');
 assert.match(app, /18\*60\*60\*1000/, 'abnormally long timers need a recovery decision');
 assert.match(app, /Notification\.requestPermission/, 'pomodoro notifications must be requested from a user action');
+assert.match(cloud, /response\.headers\.get\('date'\)/, 'cloud responses must calibrate the device clock');
+assert.match(app, /RijiCloud\.now\(\)/, 'record validation must use calibrated time');
+assert.match(app, /RijiCloud\.calibrate\(\)/, 'clock calibration must run even before cloud sign-in');
+assert.match(html, /id="recordEditQuality"[^>]*min="0"[^>]*max="100"/, 'sleep quality must be editable within its valid range');
+assert.match(html, /id="summaryCoverage"/, 'monthly summary values need dynamic targets');
+assert.match(app, /function renderMonthlySummary/, 'monthly summary must be calculated from records');
+assert.match(html, /id="mergeImport"/, 'imports need an explicit merge choice');
+assert.match(app, /RijiData\.merge\(state,pendingImportData\)/, 'merge import must preserve current and imported data');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 

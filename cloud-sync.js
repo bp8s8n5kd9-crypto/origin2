@@ -4,7 +4,8 @@
   const SUPABASE_KEY='sb_publishable_H47zIMu2MQHHfbcuDt1mAg_VIwC8nM9';
   const APP_URL='https://bp8s8n5kd9-crypto.github.io/origin2/';
   const SESSION_KEY='riji-cloud-session';
-  let syncTimer=null,syncing=false;
+  const CLOCK_KEY='riji-clock-offset';
+  let syncTimer=null,syncing=false,clockOffsetMs=Number(localStorage.getItem(CLOCK_KEY)||0),clockCheckedAt=localStorage.getItem(`${CLOCK_KEY}-checked`);
 
   function emit(status,message){window.dispatchEvent(new CustomEvent('riji-cloud-status',{detail:{status,message}}))}
   function readSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}}
@@ -13,7 +14,8 @@
   function comparable(value){const copy=RijiData.clone(value);delete copy.sync;if(copy.meta)delete copy.meta.updatedAt;return JSON.stringify(copy)}
   function headers(token,extra={}){return {apikey:SUPABASE_KEY,...(token?{Authorization:`Bearer ${token}`}:{}) ,...extra}}
   async function request(path,options={}){
-    const response=await fetch(`${SUPABASE_URL}${path}`,options),text=await response.text();let body=null;try{body=text?JSON.parse(text):null}catch{body=text}
+    const sentAt=Date.now(),response=await fetch(`${SUPABASE_URL}${path}`,options),receivedAt=Date.now(),serverDate=Date.parse(response.headers.get('date')||'');if(Number.isFinite(serverDate)){const offset=serverDate-(sentAt+receivedAt)/2;if(Math.abs(offset)<24*60*60*1000){clockOffsetMs=Math.round(offset);clockCheckedAt=new Date(receivedAt).toISOString();localStorage.setItem(CLOCK_KEY,String(clockOffsetMs));localStorage.setItem(`${CLOCK_KEY}-checked`,clockCheckedAt);window.dispatchEvent(new CustomEvent('riji-clock-calibrated',{detail:{offsetMs:clockOffsetMs,checkedAt:clockCheckedAt}}))}}
+    const text=await response.text();let body=null;try{body=text?JSON.parse(text):null}catch{body=text}
     if(!response.ok){const message=body?.msg||body?.message||body?.error_description||`云端请求失败（${response.status}）`;const error=new Error(message);error.status=response.status;error.code=body?.code||'';throw error}
     return body;
   }
@@ -42,5 +44,8 @@
   }
   function schedule(provider,onRemoteChange){clearTimeout(syncTimer);if(!session())return;syncTimer=setTimeout(async()=>{try{const result=await sync(provider());if(result.changed)onRemoteChange?.(result.data)}catch{}},1800)}
   function signOut(){writeSession(null);emit('signed-out','仅保存在此设备')}
-  window.RijiCloud={authenticate,sync,schedule,signOut,session};
+  async function calibrate(){try{await request('/auth/v1/settings',{headers:headers(null)});return clock()}catch{return clock()}}
+  function now(){return new Date(Date.now()+clockOffsetMs)}
+  function clock(){return {offsetMs:clockOffsetMs,checkedAt:clockCheckedAt}}
+  window.RijiCloud={authenticate,sync,schedule,signOut,session,calibrate,now,clock};
 })();

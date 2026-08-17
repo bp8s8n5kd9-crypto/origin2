@@ -50,6 +50,8 @@ body,button,input,select,textarea{font-family:"Songti SC","STSong","SimSun",seri
 .time-segment{padding:0;border-radius:1px}.timeline-card{overflow:hidden}.time-track{background:#111311}
 .timer-dock{position:fixed;z-index:8;left:calc(220px + 5vw);right:5vw;bottom:24px;background:#171a18;padding:13px 18px;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:16px}.timer-dock b{font-size:20px}.timer-dock .primary{width:auto}
 .timer-dock small{color:var(--muted)}.timer-controls{display:flex;gap:8px}.timer-controls button{white-space:nowrap}
+.clock[data-state="warning"]{color:#ff8b82;font-weight:700}
+@media(max-width:900px){.clock{display:block;font-size:10px;white-space:nowrap}}
 .timer-dock>span{grid-column:1;grid-row:1}.timer-dock>strong{grid-column:2;grid-row:1}.timer-dock>small{grid-column:2;grid-row:2}.timer-dock>b{grid-column:3;grid-row:1/3}.timer-dock>.timer-controls{grid-column:4;grid-row:1/3}
 @media(max-width:900px){.timer-dock>span,.timer-dock>strong,.timer-dock>small{grid-column:1}.timer-dock>span{grid-row:1}.timer-dock>strong{grid-row:2}.timer-dock>small{grid-row:3}.timer-dock>b{grid-column:2;grid-row:1/4}.timer-dock>.timer-controls{grid-column:1/3;grid-row:4;display:grid;grid-template-columns:repeat(3,1fr)}.timer-dock>.timer-controls button{grid-column:auto;min-width:0}}
 .icon-sprite{position:absolute;width:0;height:0;overflow:hidden}.dialog-actions{display:flex;justify-content:space-between;gap:12px;margin-top:24px}#actionEditDialog label{display:grid;gap:7px;margin:15px 0;font-size:13px}#actionEditDialog input,#actionEditDialog select{border:0;background:#202320}.danger{color:#dc7169!important}

@@ -73,13 +73,13 @@
 
       <section class="page" id="summaryPage">
         <div class="page-heading">
-          <div><div class="eyebrow">月度汇总</div><h1>八月的时间账本</h1></div>
+          <div><div class="eyebrow">月度汇总</div><h1 id="summaryHeading">本月的时间账本</h1></div>
           <select id="monthSelect"><option value="2026-08">2026年8月</option></select>
         </div>
         <div class="summary-grid">
-          <div class="summary-stat"><span>记录覆盖率</span><strong>38%</strong><small>较上月 +6%</small></div>
-          <div class="summary-stat"><span>已记录时间</span><strong>121.5h</strong><small>本月 14 天</small></div>
-          <div class="summary-stat"><span>平均睡眠</span><strong>7h 26m</strong><small>质量评分 81</small></div>
+          <div class="summary-stat"><span>记录覆盖率</span><strong id="summaryCoverage">0%</strong><small id="summaryCoverageNote">尚无记录</small></div>
+          <div class="summary-stat"><span>已记录时间</span><strong id="summaryRecorded">0分钟</strong><small id="summaryRecordedNote">本月 0 天</small></div>
+          <div class="summary-stat"><span>平均睡眠</span><strong id="summarySleep">暂无</strong><small id="summarySleepNote">暂无质量评分</small></div>
         </div>
         <div class="distribution">
           <div class="section-title"><div><h2>时间分布</h2><p>占已记录时间的比例</p></div><div class="segmented"><button class="active">已记录</button><button>自然时间</button></div></div>
@@ -208,7 +208,7 @@
         <div class="scene-conflict hidden" id="timerConflict" role="alert"><strong>检测到计时会话冲突</strong><p>两台设备在同一计时版本上进行了不同操作。请选择继续使用的会话，也可以先保存另一设备已经投入的片段。</p><div><button type="button" class="secondary" id="keepLocalTimer">保留此设备</button><button type="button" class="secondary" id="saveBothTimers">保存云端片段并保留本机</button><button type="button" class="primary" id="useCloudTimer">采用云端会话</button></div></div>
       </section>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
-      <div class="import-preview hidden" id="importPreview"><strong>待导入数据</strong><p id="importSummary"></p><button type="button" class="primary" id="applyImport">确认覆盖当前数据</button></div>
+      <div class="import-preview hidden" id="importPreview"><strong>待导入数据</strong><p id="importSummary"></p><div class="dialog-actions"><button type="button" class="secondary" id="mergeImport">与当前数据合并</button><button type="button" class="primary" id="applyImport">覆盖当前数据</button></div></div>
       <div class="backup-list"><h3>本地备份</h3><div id="backupList"></div></div>
     </form>
   </dialog>
@@ -227,6 +227,7 @@
       <label>时间性质<select id="recordEditNature"><option value="positive">正念</option><option value="neutral">中性</option><option value="sleep">睡眠</option></select></label>
       <label>Tag<input id="recordEditTag"></label>
       <label>来源<input id="recordEditSource" placeholder="日迹计时或外部软件"></label>
+      <label class="hidden" id="recordEditQualityWrap">睡眠质量（0–100，可留空）<input id="recordEditQuality" type="number" min="0" max="100"></label>
       <div class="dialog-actions"><button type="button" class="secondary danger" id="deleteRecord">删除记录</button><button type="button" class="primary" id="saveRecordEdit">保存修改</button></div>
     </form>
   </dialog>

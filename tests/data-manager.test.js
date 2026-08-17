@@ -70,6 +70,10 @@ const newerRemoteTimer={...remoteTimerState,sync:{timerRevision:3}};
 assert.equal(data.merge(localTimerState,newerRemoteTimer).activeTimer.sessionId,'timer_b');
 const resolvedTimer={...timerConflict,sync:{...timerConflict.sync,timerRevision:3,timerConflict:null}};
 assert.equal(data.merge(resolvedTimer,timerConflict).sync.timerConflict,null);
+const endedTimer={...localTimerState,activeTimer:null,sync:{timerRevision:4}};
+assert.equal(data.merge(endedTimer,newerRemoteTimer).activeTimer,null);
+const equalEndedTimer={...localTimerState,activeTimer:null,sync:{timerRevision:2}};
+assert.ok(data.merge(equalEndedTimer,remoteTimerState).sync.timerConflict);
 
 const currentTime=new Date(2026,7,17,18,42);
 assert.equal(data.validateTimeWindow('2026-08-17','18:00','19:00',currentTime),'结束时间尚未到来');
