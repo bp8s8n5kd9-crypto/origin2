@@ -89,4 +89,15 @@ assert.deepEqual(JSON.parse(JSON.stringify(overnight)),[
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(data.splitTimeWindow(currentTime,currentTime))),[]);
 
+const overlaps=data.findRecordOverlaps([
+  {id:'a',date:'2026-08-17',start:'18:00',end:'19:00',region:'上海',name:'阅读'},
+  {id:'b',date:'2026-08-17',start:'18:40',end:'19:20',region:'上海',name:'游戏'},
+  {id:'c',date:'2026-08-17',start:'18:30',end:'19:00',region:'杭州',name:'散步'},
+  {id:'d',date:'2026-08-17',start:'23:30',end:'00:30',region:'上海',name:'夜间活动'},
+  {id:'e',date:'2026-08-18',start:'00:15',end:'00:45',region:'上海',name:'继续活动'}
+]);
+assert.equal(overlaps.length,2);
+assert.equal(overlaps[0].minutes,20);
+assert.deepEqual([overlaps[1].first.id,overlaps[1].second.id],['d','e']);
+
 console.log('data-manager tests passed');

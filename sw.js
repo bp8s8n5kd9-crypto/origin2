@@ -1,4 +1,4 @@
-const CACHE_NAME='riji-shell-v5';
+const CACHE_NAME='riji-shell-v6';
 const APP_SHELL=['./','./index.html','./styles.css','./data-manager.js','./cloud-sync.js','./app.js','./manifest.webmanifest','./icons/sundial.svg'];
 
 self.addEventListener('install',event=>{

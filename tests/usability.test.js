@@ -65,6 +65,10 @@ assert.match(html, /id="summaryCoverage"/, 'monthly summary values need dynamic 
 assert.match(app, /function renderMonthlySummary/, 'monthly summary must be calculated from records');
 assert.match(html, /id="mergeImport"/, 'imports need an explicit merge choice');
 assert.match(app, /RijiData\.merge\(state,pendingImportData\)/, 'merge import must preserve current and imported data');
+assert.match(html, /id="recordConflictList"/, 'data management needs a record conflict audit list');
+assert.match(html, /id="timelineConflictSummary" role="alert"/, 'daily views need an overlap warning');
+assert.match(html, /id="monthlyConflictSummary" role="alert"/, 'monthly summaries need an overlap warning');
+assert.match(app, /RijiData\.findRecordOverlaps/, 'the application must audit merged records for overlaps');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 

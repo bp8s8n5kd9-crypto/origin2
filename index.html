@@ -60,6 +60,7 @@
           <div class="date-control"><button id="prevDay" aria-label="前一天">‹</button><input type="date" id="timelineDate"><button id="nextDay" aria-label="后一天">›</button></div>
         </div>
         <div class="timeline-summary" id="timelineSummary"></div>
+        <div class="record-warning hidden" id="timelineConflictSummary" role="alert"></div>
         <div class="timeline-card">
           <div class="hour-labels" id="hourLabels"></div>
           <div class="time-track" id="timeTrack"></div>
@@ -81,6 +82,7 @@
           <div class="summary-stat"><span>已记录时间</span><strong id="summaryRecorded">0分钟</strong><small id="summaryRecordedNote">本月 0 天</small></div>
           <div class="summary-stat"><span>平均睡眠</span><strong id="summarySleep">暂无</strong><small id="summarySleepNote">暂无质量评分</small></div>
         </div>
+        <div class="record-warning hidden" id="monthlyConflictSummary" role="alert"></div>
         <div class="distribution">
           <div class="section-title"><div><h2>时间分布</h2><p>占已记录时间的比例</p></div><div class="segmented"><button class="active">已记录</button><button>自然时间</button></div></div>
           <div class="distribution-body" id="distributionBody"></div>
@@ -209,6 +211,7 @@
       </section>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
       <div class="import-preview hidden" id="importPreview"><strong>待导入数据</strong><p id="importSummary"></p><div class="dialog-actions"><button type="button" class="secondary" id="mergeImport">与当前数据合并</button><button type="button" class="primary" id="applyImport">覆盖当前数据</button></div></div>
+      <div class="record-conflicts"><h3>流水冲突审计 <span id="recordConflictCount">0</span></h3><div id="recordConflictList"></div></div>
       <div class="backup-list"><h3>本地备份</h3><div id="backupList"></div></div>
     </form>
   </dialog>
