@@ -41,6 +41,8 @@ assert.match(html, /<input(?=[^>]*id="cloudEmail")(?=[^>]*type="email")[^>]*>/, 
 assert.match(html, /<input(?=[^>]*id="cloudPassword")(?=[^>]*autocomplete="current-password")[^>]*>/, 'cloud password field needs password-manager support');
 assert.match(cloud, /on_conflict=user_id/, 'cloud writes must use a deterministic user-level upsert');
 assert.doesNotMatch(cloud, /service_role|sb_secret_/, 'browser code must never contain a Supabase secret key');
+assert.match(cloud, /signup\?redirect_to=/, 'signup must provide an explicit confirmation redirect');
+assert.match(cloud, /github\.io\/origin2\//, 'confirmation must return to the deployed project path');
 assert.match(html, /id="cloudSummary" role="status" aria-live="polite"/, 'cloud auth feedback needs an announced inline status');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');

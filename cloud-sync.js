@@ -2,6 +2,7 @@
   'use strict';
   const SUPABASE_URL='https://uzstnvnwtvrazcwzhprv.supabase.co';
   const SUPABASE_KEY='sb_publishable_H47zIMu2MQHHfbcuDt1mAg_VIwC8nM9';
+  const APP_URL='https://bp8s8n5kd9-crypto.github.io/origin2/';
   const SESSION_KEY='riji-cloud-session';
   let syncTimer=null,syncing=false;
 
@@ -17,7 +18,7 @@
     return body;
   }
   async function authenticate(email,password,mode){
-    const path=mode==='signup'?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
+    const path=mode==='signup'?`/auth/v1/signup?redirect_to=${encodeURIComponent(APP_URL)}`:'/auth/v1/token?grant_type=password';
     const result=await request(path,{method:'POST',headers:headers(null,{'Content-Type':'application/json'}),body:JSON.stringify({email,password})});
     const authSession=result.session||result;
     if(authSession?.access_token){writeSession({access_token:authSession.access_token,refresh_token:authSession.refresh_token,expires_at:authSession.expires_at||Math.floor(Date.now()/1000)+(authSession.expires_in||3600),user:authSession.user||result.user});emit('ready','云同步已连接')}
