@@ -44,6 +44,9 @@ assert.doesNotMatch(cloud, /service_role|sb_secret_/, 'browser code must never c
 assert.match(cloud, /signup\?redirect_to=/, 'signup must provide an explicit confirmation redirect');
 assert.match(cloud, /github\.io\/origin2\//, 'confirmation must return to the deployed project path');
 assert.match(html, /id="cloudSummary" role="status" aria-live="polite"/, 'cloud auth feedback needs an announced inline status');
+assert.match(html, /id="sceneConflict" role="alert"/, 'scene conflicts need an explicit recovery surface');
+assert.match(app, /sceneRevision=.*sceneRevision.*\+1/, 'scene edits must advance their own sync revision');
+assert.match(app, /before-scene-conflict-resolution/, 'scene conflict resolution must create a recovery backup');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 

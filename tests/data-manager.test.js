@@ -14,14 +14,14 @@ vm.runInContext(fs.readFileSync('data-manager.js','utf8'),context);
 const data = context.window.RijiData;
 
 const migrated = data.load({region:'上海',records:[{date:'2026-08-15',start:'09:00',end:'10:00',name:'阅读',category:'学习'}]});
-assert.equal(migrated.schemaVersion,3);
+assert.equal(migrated.schemaVersion,4);
 assert.equal(migrated.records[0].timeNature,'positive');
 assert.equal(migrated.records[0].source,'日迹');
 assert.ok(migrated.records[0].id);
 assert.deepEqual(Object.keys(migrated.sceneTrees),[]);
 
 data.save(migrated);
-assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,3);
+assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,4);
 assert.equal(data.backups().length,1);
 
 const exported = data.envelope(migrated);
@@ -38,9 +38,23 @@ const remote={...imported,records:[{...imported.records[0],id:'shared',name:'新
 const merged=data.merge(local,remote);
 assert.equal(merged.records.length,1);
 assert.equal(merged.records[0].name,'新名称');
-assert.deepEqual([...merged.regions].sort(),['上海','杭州'].sort());
+assert.deepEqual([...merged.regions],['上海']);
+assert.ok(merged.sync.sceneConflict, 'competing region structures should require an explicit choice');
 assert.ok(merged.deletedRecordIds.includes('remote-only'));
 assert.equal(merged.sync.revision,1);
+
+const sceneBase={...imported,sceneMaps:{上海:{home:{title:'家'}}},sceneTrees:{上海:{home:{parent:null,children:[]}}},regions:['上海']};
+const localScenes={...sceneBase,sceneMaps:{上海:{home:{title:'本机的家'}}},sync:{sceneRevision:2},meta:{...sceneBase.meta,updatedAt:'2026-08-15T12:00:00.000Z'}};
+const olderRemoteScenes={...sceneBase,sceneMaps:{上海:{home:{title:'云端旧家'}}},sync:{sceneRevision:1},meta:{...sceneBase.meta,updatedAt:'2026-08-15T13:00:00.000Z'}};
+assert.equal(data.merge(localScenes,olderRemoteScenes).sceneMaps.上海.home.title,'本机的家');
+const newerRemoteScenes={...olderRemoteScenes,sync:{sceneRevision:3}};
+assert.equal(data.merge(localScenes,newerRemoteScenes).sceneMaps.上海.home.title,'云端旧家');
+const competingRemoteScenes={...olderRemoteScenes,sync:{sceneRevision:2}};
+const conflicted=data.merge(localScenes,competingRemoteScenes);
+assert.equal(conflicted.sceneMaps.上海.home.title,'本机的家');
+assert.equal(conflicted.sync.sceneConflict.remoteConfig.sceneMaps.上海.home.title,'云端旧家');
+const resolved={...conflicted,sync:{...conflicted.sync,sceneRevision:3,sceneConflict:null}};
+assert.equal(data.merge(resolved,conflicted).sync.sceneConflict,null);
 
 const currentTime=new Date(2026,7,17,18,42);
 assert.equal(data.validateTimeWindow('2026-08-17','18:00','19:00',currentTime),'结束时间尚未到来');

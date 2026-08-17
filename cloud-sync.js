@@ -32,7 +32,7 @@
   async function sync(localData){
     if(syncing)return {skipped:true};const auth=await refresh();if(!auth)return {signedOut:true};syncing=true;emit('syncing','正在同步');
     try{
-      const rows=await request(`/rest/v1/riji_snapshots?user_id=eq.${encodeURIComponent(auth.user.id)}&select=payload,revision,updated_at`,{headers:headers(auth.access_token)}),remote=rows?.[0],merged=remote?RijiData.merge(localData,remote.payload):RijiData.clone(localData),changed=Boolean(remote)&&comparable(localData)!==comparable(merged);
+      const rows=await request(`/rest/v1/riji_snapshots?user_id=eq.${encodeURIComponent(auth.user.id)}&select=payload,revision,updated_at`,{headers:headers(auth.access_token)}),remote=rows?.[0],merged=remote?RijiData.merge(localData,remote.payload):RijiData.clone(localData),changed=Boolean(remote)&&(comparable(localData)!==comparable(merged)||JSON.stringify(localData.sync?.sceneConflict||null)!==JSON.stringify(merged.sync?.sceneConflict||null));
       merged.sync={...(merged.sync||{}),revision:Math.max(merged.sync?.revision||0,remote?.revision||0)+1,lastSyncedAt:new Date().toISOString()};
       if(changed)RijiData.createBackup(localData,'before-cloud-merge');
       const normalized=RijiData.save(merged);

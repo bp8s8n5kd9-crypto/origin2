@@ -189,6 +189,7 @@
         <div class="cloud-heading"><div><h3>跨设备同步</h3><p id="cloudSummary" role="status" aria-live="polite">尚未连接云端账户</p></div><button type="button" class="secondary hidden" id="syncNow">立即同步</button></div>
         <div class="cloud-login" id="cloudLogin"><label>邮箱<input type="email" id="cloudEmail" autocomplete="email"></label><label>密码<input type="password" id="cloudPassword" autocomplete="current-password" minlength="8"></label><div><button type="button" class="secondary" id="cloudSignup">创建账户</button><button type="button" class="primary" id="cloudSignin">登录</button></div></div>
         <div class="cloud-account hidden" id="cloudAccount"><span id="cloudUser"></span><button type="button" class="secondary" id="cloudSignout">退出云同步</button></div>
+        <div class="scene-conflict hidden" id="sceneConflict" role="alert"><strong>检测到场景结构冲突</strong><p>两台设备修改了同一版场景。请选择要保留的版本；处理前会自动创建恢复备份。</p><div><button type="button" class="secondary" id="keepLocalScenes">保留此设备</button><button type="button" class="primary" id="useCloudScenes">采用云端版本</button></div></div>
       </section>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
       <div class="import-preview hidden" id="importPreview"><strong>待导入数据</strong><p id="importSummary"></p><button type="button" class="primary" id="applyImport">确认覆盖当前数据</button></div>
