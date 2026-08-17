@@ -14,14 +14,17 @@ vm.runInContext(fs.readFileSync('data-manager.js','utf8'),context);
 const data = context.window.RijiData;
 
 const migrated = data.load({region:'上海',records:[{date:'2026-08-15',start:'09:00',end:'10:00',name:'阅读',category:'学习'}]});
-assert.equal(migrated.schemaVersion,5);
+assert.equal(migrated.schemaVersion,6);
 assert.equal(migrated.records[0].timeNature,'positive');
 assert.equal(migrated.records[0].source,'日迹');
 assert.ok(migrated.records[0].id);
 assert.deepEqual(Object.keys(migrated.sceneTrees),[]);
+const migratedTimer=data.load({...migrated,activeTimer:{name:'旧计时',start:1234}}).activeTimer;
+assert.equal(migratedTimer.sessionId,'timer_1234');
+assert.deepEqual(JSON.parse(JSON.stringify(migratedTimer.segments)),[{start:1234,end:null}]);
 
 data.save(migrated);
-assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,5);
+assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,6);
 assert.equal(data.backups().length,1);
 
 const exported = data.envelope(migrated);
@@ -55,6 +58,18 @@ assert.equal(conflicted.sceneMaps.上海.home.title,'本机的家');
 assert.equal(conflicted.sync.sceneConflict.remoteConfig.sceneMaps.上海.home.title,'云端旧家');
 const resolved={...conflicted,sync:{...conflicted.sync,sceneRevision:3,sceneConflict:null}};
 assert.equal(data.merge(resolved,conflicted).sync.sceneConflict,null);
+
+const timerA={name:'游戏',start:1000,sessionId:'timer_a',segments:[{start:1000,end:null}]};
+const timerB={name:'休息',start:2000,sessionId:'timer_b',segments:[{start:2000,end:null}]};
+const localTimerState={...sceneBase,activeTimer:timerA,sync:{timerRevision:2},meta:{...sceneBase.meta,updatedAt:'2026-08-15T12:00:00.000Z'}};
+const remoteTimerState={...sceneBase,activeTimer:timerB,sync:{timerRevision:2},meta:{...sceneBase.meta,updatedAt:'2026-08-15T13:00:00.000Z'}};
+const timerConflict=data.merge(localTimerState,remoteTimerState);
+assert.equal(timerConflict.activeTimer.sessionId,'timer_a');
+assert.equal(timerConflict.sync.timerConflict.remoteTimer.sessionId,'timer_b');
+const newerRemoteTimer={...remoteTimerState,sync:{timerRevision:3}};
+assert.equal(data.merge(localTimerState,newerRemoteTimer).activeTimer.sessionId,'timer_b');
+const resolvedTimer={...timerConflict,sync:{...timerConflict.sync,timerRevision:3,timerConflict:null}};
+assert.equal(data.merge(resolvedTimer,timerConflict).sync.timerConflict,null);
 
 const currentTime=new Date(2026,7,17,18,42);
 assert.equal(data.validateTimeWindow('2026-08-17','18:00','19:00',currentTime),'结束时间尚未到来');

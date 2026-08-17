@@ -2,7 +2,7 @@
   'use strict';
   const STORAGE_KEY='riji-state';
   const BACKUP_KEY='riji-backups';
-  const SCHEMA_VERSION=5;
+  const SCHEMA_VERSION=6;
   const BACKUP_LIMIT=8;
   const AUTO_BACKUP_INTERVAL=30*60*1000;
 
@@ -17,16 +17,17 @@
       region:record.region||'上海',sceneKey:record.sceneKey||null,path:record.path||'',sleepQuality:record.sleepQuality??null,sessionId:record.sessionId||null,createdAt:record.createdAt||new Date().toISOString(),updatedAt:record.updatedAt||null
     };
   }
+  function normalizeTimer(timer){if(!timer)return null;const start=Number(timer.startedAt||timer.start||Date.now()),segments=Array.isArray(timer.segments)&&timer.segments.length?timer.segments:[{start,end:null}];return {...timer,start,startedAt:start,sessionId:timer.sessionId||`timer_${start}`,segments:segments.map(segment=>({start:Number(segment.start),end:segment.end?Number(segment.end):null})),paused:Boolean(timer.paused)}}
   function migrate(input){
     const data=clone(input||{}),from=Number(data.schemaVersion||1);
     data.schemaVersion=SCHEMA_VERSION;
     data.meta={createdAt:data.meta?.createdAt||new Date().toISOString(),updatedAt:data.meta?.updatedAt||new Date().toISOString(),migratedFrom:from<SCHEMA_VERSION?from:(data.meta?.migratedFrom||null)};
     data.region=data.region||'上海';data.currentScenes=data.currentScenes||{};data.records=(data.records||[]).map(normalizeRecord);
-    data.sleeping=Boolean(data.sleeping);data.sleepStart=data.sleepStart||null;data.sleepStartedAt=data.sleepStartedAt||null;data.activeTimer=data.activeTimer||null;
+    data.sleeping=Boolean(data.sleeping);data.sleepStart=data.sleepStart||null;data.sleepStartedAt=data.sleepStartedAt||null;data.activeTimer=normalizeTimer(data.activeTimer);
     if(data.sleeping&&!data.sleepStartedAt&&data.sleepStart){const [hours,minutes]=data.sleepStart.split(':').map(Number),candidate=new Date();candidate.setHours(hours,minutes,0,0);if(candidate>Date.now())candidate.setDate(candidate.getDate()-1);data.sleepStartedAt=candidate.toISOString()}
     data.settings={timezone:'Asia/Shanghai',autoBackup:true,...data.settings};
     data.sceneMaps=data.sceneMaps||{};data.sceneTrees=data.sceneTrees||{};data.sceneTree=data.sceneTree||null;data.customScenes=data.customScenes||{};
-    data.regions=data.regions||Object.keys(data.sceneMaps);data.deletedRecordIds=[...new Set(data.deletedRecordIds||[])];data.sync={lastSyncedAt:null,revision:0,sceneRevision:0,sceneConflict:null,...data.sync};
+    data.regions=data.regions||Object.keys(data.sceneMaps);data.deletedRecordIds=[...new Set(data.deletedRecordIds||[])];data.sync={lastSyncedAt:null,revision:0,sceneRevision:0,sceneConflict:null,timerRevision:0,timerConflict:null,...data.sync};
     return data;
   }
   function validate(data){
@@ -88,7 +89,13 @@
     else if(scenesDiffer){sceneConflict=local.sync.sceneConflict||remote.sync.sceneConflict||{detectedAt:new Date().toISOString(),localRevision:localSceneRevision,remoteRevision:remoteSceneRevision,remoteConfig:sceneConfig(remote)}}
     else sceneConflict=local.sync.sceneConflict||remote.sync.sceneConflict||null;
     SCENE_FIELDS.forEach(field=>{merged[field]=clone(sceneSource[field])});
-    merged.records=[...records.values()];merged.deletedRecordIds=deleted;merged.meta={createdAt:[local.meta.createdAt,remote.meta.createdAt].sort()[0],updatedAt:new Date(Math.max(localStamp,remoteStamp)).toISOString(),migratedFrom:Math.min(local.meta.migratedFrom||SCHEMA_VERSION,remote.meta.migratedFrom||SCHEMA_VERSION)};merged.sync={...older.sync,...newer.sync,revision:Math.max(local.sync.revision||0,remote.sync.revision||0)+1,sceneRevision:Math.max(localSceneRevision,remoteSceneRevision),sceneConflict,lastSyncedAt:new Date().toISOString()};validate(merged);return merged;
+    const localTimerRevision=local.sync.timerRevision||0,remoteTimerRevision=remote.sync.timerRevision||0,timersDiffer=JSON.stringify(local.activeTimer)!==JSON.stringify(remote.activeTimer);
+    let timerSource=local,timerConflict=null;
+    if(remoteTimerRevision>localTimerRevision){timerSource=remote;timerConflict=remote.sync.timerConflict||null}
+    else if(localTimerRevision>remoteTimerRevision)timerConflict=local.sync.timerConflict||null;
+    else if(timersDiffer){timerConflict=local.sync.timerConflict||remote.sync.timerConflict||{detectedAt:new Date().toISOString(),localRevision:localTimerRevision,remoteRevision:remoteTimerRevision,remoteTimer:clone(remote.activeTimer)}}
+    else timerConflict=local.sync.timerConflict||remote.sync.timerConflict||null;
+    merged.activeTimer=clone(timerSource.activeTimer);merged.records=[...records.values()];merged.deletedRecordIds=deleted;merged.meta={createdAt:[local.meta.createdAt,remote.meta.createdAt].sort()[0],updatedAt:new Date(Math.max(localStamp,remoteStamp)).toISOString(),migratedFrom:Math.min(local.meta.migratedFrom||SCHEMA_VERSION,remote.meta.migratedFrom||SCHEMA_VERSION)};merged.sync={...older.sync,...newer.sync,revision:Math.max(local.sync.revision||0,remote.sync.revision||0)+1,sceneRevision:Math.max(localSceneRevision,remoteSceneRevision),sceneConflict,timerRevision:Math.max(localTimerRevision,remoteTimerRevision),timerConflict,lastSyncedAt:new Date().toISOString()};validate(merged);return merged;
   }
   window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,envelope,parseImport,createBackup,backups,restore,merge,clone};
 })();

@@ -49,8 +49,14 @@ assert.match(app, /sceneRevision=.*sceneRevision.*\+1/, 'scene edits must advanc
 assert.match(app, /before-scene-conflict-resolution/, 'scene conflict resolution must create a recovery backup');
 assert.match(app, /RijiData\.splitTimeWindow/, 'timers and sleep sessions must split safely across midnight');
 assert.match(app, /sleepQuality:quality/, 'sleep quality must be attached to the sleep record');
-assert.match(app, /id:`\$\{details\.sessionId\}_\$\{part\.date\}`/, 'cross-device session records need deterministic ids');
+assert.match(app, /id:`\$\{details\.idPrefix\|\|details\.sessionId\}_\$\{part\.date\}`/, 'cross-device session records need deterministic ids');
 assert.match(app, /'睡眠质量'/, 'sleep quality must be included in CSV exports');
+assert.match(html, /id="pauseTimer"/, 'active timers need pause and resume controls');
+assert.match(html, /id="pomodoroDialog"/, 'pomodoro completion needs an explicit decision dialog');
+assert.match(html, /id="timerConflict" role="alert"/, 'timer conflicts need an explicit recovery surface');
+assert.match(app, /timerRevision=.*timerRevision.*\+1/, 'timer changes must advance their own sync revision');
+assert.match(app, /18\*60\*60\*1000/, 'abnormally long timers need a recovery decision');
+assert.match(app, /Notification\.requestPermission/, 'pomodoro notifications must be requested from a user action');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 
