@@ -47,6 +47,10 @@ assert.match(html, /id="cloudSummary" role="status" aria-live="polite"/, 'cloud 
 assert.match(html, /id="sceneConflict" role="alert"/, 'scene conflicts need an explicit recovery surface');
 assert.match(app, /sceneRevision=.*sceneRevision.*\+1/, 'scene edits must advance their own sync revision');
 assert.match(app, /before-scene-conflict-resolution/, 'scene conflict resolution must create a recovery backup');
+assert.match(app, /RijiData\.splitTimeWindow/, 'timers and sleep sessions must split safely across midnight');
+assert.match(app, /sleepQuality:quality/, 'sleep quality must be attached to the sleep record');
+assert.match(app, /id:`\$\{details\.sessionId\}_\$\{part\.date\}`/, 'cross-device session records need deterministic ids');
+assert.match(app, /'睡眠质量'/, 'sleep quality must be included in CSV exports');
 assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 assert.match(app, /over_email_send_rate_limit/, 'email throttling needs a specific user-facing explanation');
 

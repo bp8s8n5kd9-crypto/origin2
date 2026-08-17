@@ -14,14 +14,14 @@ vm.runInContext(fs.readFileSync('data-manager.js','utf8'),context);
 const data = context.window.RijiData;
 
 const migrated = data.load({region:'上海',records:[{date:'2026-08-15',start:'09:00',end:'10:00',name:'阅读',category:'学习'}]});
-assert.equal(migrated.schemaVersion,4);
+assert.equal(migrated.schemaVersion,5);
 assert.equal(migrated.records[0].timeNature,'positive');
 assert.equal(migrated.records[0].source,'日迹');
 assert.ok(migrated.records[0].id);
 assert.deepEqual(Object.keys(migrated.sceneTrees),[]);
 
 data.save(migrated);
-assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,4);
+assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,5);
 assert.equal(data.backups().length,1);
 
 const exported = data.envelope(migrated);
@@ -62,5 +62,12 @@ assert.equal(data.validateTimeWindow('2026-08-17','21:00','21:30',currentTime),'
 assert.equal(data.validateTimeWindow('2026-08-18','09:00','10:00',currentTime),'不能记录尚未到来的日期');
 assert.equal(data.validateTimeWindow('2026-08-17','17:00','18:00',currentTime),null);
 assert.equal(data.validateTimeWindow('2026-08-16','23:30','00:30',currentTime),null);
+
+const overnight=data.splitTimeWindow(new Date(2026,7,16,23,30),new Date(2026,7,17,1,0));
+assert.deepEqual(JSON.parse(JSON.stringify(overnight)),[
+  {date:'2026-08-16',start:'23:30',end:'24:00',durationMinutes:30},
+  {date:'2026-08-17',start:'00:00',end:'01:00',durationMinutes:60}
+]);
+assert.deepEqual(JSON.parse(JSON.stringify(data.splitTimeWindow(currentTime,currentTime))),[]);
 
 console.log('data-manager tests passed');
