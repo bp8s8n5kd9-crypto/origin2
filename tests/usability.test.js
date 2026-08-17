@@ -41,6 +41,8 @@ assert.match(html, /<input(?=[^>]*id="cloudEmail")(?=[^>]*type="email")[^>]*>/, 
 assert.match(html, /<input(?=[^>]*id="cloudPassword")(?=[^>]*autocomplete="current-password")[^>]*>/, 'cloud password field needs password-manager support');
 assert.match(cloud, /on_conflict=user_id/, 'cloud writes must use a deterministic user-level upsert');
 assert.doesNotMatch(cloud, /service_role|sb_secret_/, 'browser code must never contain a Supabase secret key');
+assert.match(html, /id="cloudSummary" role="status" aria-live="polite"/, 'cloud auth feedback needs an announced inline status');
+assert.match(app, /\$\$\('dialog\[open\]'\)/, 'toast feedback must be moved into the active top-layer dialog');
 
 function rgb(hex) {
   return [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);

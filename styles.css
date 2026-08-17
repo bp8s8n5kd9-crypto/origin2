@@ -96,6 +96,7 @@ button:disabled,input:disabled,select:disabled{opacity:.58;cursor:not-allowed}
 .sync-state b{font-weight:400}.sync-state[data-status="syncing"] span{background:#e8d9a8}.sync-state[data-status="error"] span{background:#ff8b82}.sync-state[data-status="offline"] span{background:#9da59f}
 .cloud-section{margin:24px 0;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .cloud-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.cloud-heading h3{margin:0;font-size:15px}.cloud-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.cloud-heading p[data-state="pending"]{color:#e8d9a8}.cloud-heading p[data-state="success"]{color:#b9dfbf}.cloud-heading p[data-state="error"]{color:#ff8b82}
 .cloud-login{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-top:16px}.cloud-login label{display:grid;gap:6px;font-size:12px}.cloud-login>div{display:flex;gap:8px}.cloud-login button{white-space:nowrap}
 .cloud-account{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}.cloud-account span{overflow-wrap:anywhere;color:#e8d9a8}
 @media(max-width:700px){.cloud-login{grid-template-columns:1fr}.cloud-login>div{display:grid;grid-template-columns:1fr 1fr}.cloud-account{align-items:flex-start;flex-direction:column}}

@@ -186,7 +186,7 @@
       <div class="data-stats" id="dataStats"></div>
       <div class="data-actions"><button type="button" class="secondary" id="exportJson">导出 JSON</button><button type="button" class="secondary" id="exportCsv">导出 CSV</button><button type="button" class="secondary" id="chooseImport">导入 JSON</button><button type="button" class="secondary" id="createBackup">立即备份</button></div>
       <section class="cloud-section">
-        <div class="cloud-heading"><div><h3>跨设备同步</h3><p id="cloudSummary">尚未连接云端账户</p></div><button type="button" class="secondary hidden" id="syncNow">立即同步</button></div>
+        <div class="cloud-heading"><div><h3>跨设备同步</h3><p id="cloudSummary" role="status" aria-live="polite">尚未连接云端账户</p></div><button type="button" class="secondary hidden" id="syncNow">立即同步</button></div>
         <div class="cloud-login" id="cloudLogin"><label>邮箱<input type="email" id="cloudEmail" autocomplete="email"></label><label>密码<input type="password" id="cloudPassword" autocomplete="current-password" minlength="8"></label><div><button type="button" class="secondary" id="cloudSignup">创建账户</button><button type="button" class="primary" id="cloudSignin">登录</button></div></div>
         <div class="cloud-account hidden" id="cloudAccount"><span id="cloudUser"></span><button type="button" class="secondary" id="cloudSignout">退出云同步</button></div>
       </section>
