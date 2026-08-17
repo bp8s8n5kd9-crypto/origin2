@@ -31,7 +31,11 @@ assert.match(css, /@media\(pointer:coarse\)/, 'coarse pointer touch targets are 
 assert.match(css, /\.dialog-close[^}]*[\s\S]*?color:#fff!important/, 'dialog close buttons need an explicit contrasting color');
 assert.match(html, /id="regionToggle"[^>]*aria-expanded="false"/, 'region picker needs an explicit menu toggle');
 assert.match(html, /id="regionOptions"[^>]*role="listbox"/, 'region history needs an accessible listbox');
-assert.match(app, /state\.regions=Object\.keys\(sceneMaps\)/, 'saved region names must persist independently');
+assert.match(app, /state\.regions=activeRegionNames\(\)/, 'saved region names must exclude archived workspaces');
+assert.match(html, /id="manageRegions"/, 'scene management needs a region management entry');
+assert.match(html, /id="copySceneBranch"/, 'scene branches need a copy command');
+assert.match(app, /before-region-permanent-delete/, 'permanent region deletion must create a recovery backup');
+assert.match(app, /RijiData\.copySceneBranch/, 'branch copying must use the tested structural copier');
 assert.match(app, /state\.records\|\|\[\]\)\.map\(record=>record\.region\)/, 'regions from historical records must be recovered');
 assert.match(html, /class="brand-mark"><img src="icons\/sundial\.svg"/, 'in-app brand must use the shared sundial icon');
 assert.match(icon, /中式赤道日晷/, 'the sundial asset needs a descriptive accessible title');

@@ -14,7 +14,8 @@ vm.runInContext(fs.readFileSync('data-manager.js','utf8'),context);
 const data = context.window.RijiData;
 
 const migrated = data.load({region:'上海',records:[{date:'2026-08-15',start:'09:00',end:'10:00',name:'阅读',category:'学习'}]});
-assert.equal(migrated.schemaVersion,6);
+assert.equal(migrated.schemaVersion,7);
+assert.deepEqual([...migrated.archivedRegions],[]);
 assert.equal(migrated.records[0].timeNature,'positive');
 assert.equal(migrated.records[0].source,'日迹');
 assert.ok(migrated.records[0].id);
@@ -24,7 +25,7 @@ assert.equal(migratedTimer.sessionId,'timer_1234');
 assert.deepEqual(JSON.parse(JSON.stringify(migratedTimer.segments)),[{start:1234,end:null}]);
 
 data.save(migrated);
-assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,6);
+assert.equal(JSON.parse(localStorage.getItem('riji-state')).schemaVersion,7);
 assert.equal(data.backups().length,1);
 
 const exported = data.envelope(migrated);
@@ -99,5 +100,16 @@ const overlaps=data.findRecordOverlaps([
 assert.equal(overlaps.length,2);
 assert.equal(overlaps[0].minutes,20);
 assert.deepEqual([overlaps[1].first.id,overlaps[1].second.id],['d','e']);
+
+const sourceMap={a:{title:'卧室',options:[{name:'内部',kind:'navigate',target:'b'},{name:'外部',kind:'navigate',target:'outside'}]},b:{title:'书桌',options:[{name:'阅读',kind:'学习'}]},outside:{title:'客厅',options:[]}};
+const sourceTree={a:{parent:null,children:['b']},b:{parent:'a',children:[]},outside:{parent:null,children:[]}};
+const targetMap={region:{title:'杭州',options:[]},home:{title:'家',options:[]}};
+const targetTree={region:{parent:null,children:['home']},home:{parent:'region',children:[]}};
+const copied=data.copySceneBranch(sourceMap,sourceTree,'a',targetMap,targetTree,'home','test');
+assert.equal(targetMap[copied.rootKey].title,'卧室 副本');
+assert.equal(targetTree[copied.rootKey].parent,'home');
+assert.equal(targetTree[copied.rootKey].children.length,1);
+assert.equal(targetMap[copied.rootKey].options.length,1);
+assert.equal(targetMap[copied.rootKey].options[0].target,targetTree[copied.rootKey].children[0]);
 
 console.log('data-manager tests passed');

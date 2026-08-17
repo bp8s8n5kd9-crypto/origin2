@@ -93,11 +93,11 @@
         <div class="page-heading"><div><div class="eyebrow">场景管理</div><h1>构建你的生活地图</h1></div><button class="primary" id="newScene">＋ 新建场景</button></div>
         <div class="editor-layout">
           <div class="tree-panel">
-            <div class="panel-title"><strong>上海</strong><button title="更多" aria-label="更多场景操作">•••</button></div>
+            <div class="panel-title"><strong>上海</strong><button id="manageRegions" title="管理地区" aria-label="管理地区">•••</button></div>
             <div class="scene-tree" id="sceneTree"></div>
           </div>
           <div class="edit-panel">
-            <div class="edit-head"><div><span>正在编辑</span><h2 id="editName">书桌</h2></div><div><button class="icon-btn" title="复制分支" aria-label="复制分支">⧉</button><button class="icon-btn danger" id="deleteScene" title="删除场景" aria-label="删除场景">⌫</button></div></div>
+            <div class="edit-head"><div><span>正在编辑</span><h2 id="editName">书桌</h2></div><div><button class="icon-btn" id="copySceneBranch" title="复制分支" aria-label="复制分支">⧉</button><button class="icon-btn danger" id="deleteScene" title="删除场景" aria-label="删除场景">⌫</button></div></div>
             <label>场景名称<input id="sceneNameInput" value="书桌"></label>
             <label>场景图标<select id="sceneIconInput"><option value="home">家</option><option value="bed">卧室／床</option><option value="desk">书桌</option><option value="bath">浴室</option><option value="sofa">客厅</option><option value="pin">地点</option></select></label>
             <label>场景描述<textarea id="sceneDescInput" rows="3">窗外的城市还没有安静下来。桌面已经收拾好，现在准备做什么？</textarea></label>
@@ -203,6 +203,33 @@
       <p>请选择如何处理它的子场景。历史流水不会被删除。</p>
       <label>子场景处理<select id="deleteChildrenMode"><option value="move">移动到上一层</option><option value="all">连同子场景一起删除</option></select></label>
       <button type="button" class="primary full" id="confirmDeleteScene">确认删除</button>
+    </form>
+  </dialog>
+  <dialog id="copySceneDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">复制场景分支</span><h2 id="copySceneHeading">复制当前分支</h2>
+      <p>当前场景及其全部子场景会一起复制。分支外部的自定义联通不会带入副本。</p>
+      <label>目标地区<select id="copyTargetRegion"></select></label>
+      <label>放入场景<select id="copyTargetParent"></select></label>
+      <button type="button" class="primary full" id="confirmCopyScene">创建副本</button>
+    </form>
+  </dialog>
+  <dialog id="regionManagerDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label">地区管理</span><h2>管理生活地区</h2>
+      <div id="activeRegionManager" class="region-manager-list"></div>
+      <div id="archivedRegionManager" class="region-manager-list"></div>
+    </form>
+  </dialog>
+  <dialog id="regionEditDialog">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+      <span class="dialog-label" id="regionEditLabel">地区操作</span><h2 id="regionEditHeading">编辑地区</h2>
+      <label id="regionNameWrap">地区名称<input id="regionNameEdit"></label>
+      <p id="regionEditMessage"></p>
+      <div class="dialog-actions"><button type="button" class="secondary danger hidden" id="permanentDeleteRegion">永久删除</button><button type="button" class="primary" id="confirmRegionEdit">确认</button></div>
     </form>
   </dialog>
   <dialog id="dataDialog">

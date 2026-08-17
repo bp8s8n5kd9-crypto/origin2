@@ -2,7 +2,7 @@
   'use strict';
   const STORAGE_KEY='riji-state';
   const BACKUP_KEY='riji-backups';
-  const SCHEMA_VERSION=6;
+  const SCHEMA_VERSION=7;
   const BACKUP_LIMIT=8;
   const AUTO_BACKUP_INTERVAL=30*60*1000;
 
@@ -27,7 +27,7 @@
     if(data.sleeping&&!data.sleepStartedAt&&data.sleepStart){const [hours,minutes]=data.sleepStart.split(':').map(Number),candidate=new Date();candidate.setHours(hours,minutes,0,0);if(candidate>Date.now())candidate.setDate(candidate.getDate()-1);data.sleepStartedAt=candidate.toISOString()}
     data.settings={timezone:'Asia/Shanghai',autoBackup:true,...data.settings};
     data.sceneMaps=data.sceneMaps||{};data.sceneTrees=data.sceneTrees||{};data.sceneTree=data.sceneTree||null;data.customScenes=data.customScenes||{};
-    data.regions=data.regions||Object.keys(data.sceneMaps);data.deletedRecordIds=[...new Set(data.deletedRecordIds||[])];data.sync={lastSyncedAt:null,revision:0,sceneRevision:0,sceneConflict:null,timerRevision:0,timerConflict:null,...data.sync};
+    data.regions=data.regions||Object.keys(data.sceneMaps);data.archivedRegions=[...new Set(data.archivedRegions||[])];data.deletedRecordIds=[...new Set(data.deletedRecordIds||[])];data.sync={lastSyncedAt:null,revision:0,sceneRevision:0,sceneConflict:null,timerRevision:0,timerConflict:null,...data.sync};
     return data;
   }
   function validate(data){
@@ -79,7 +79,16 @@
   function envelope(data){return {format:'riji-backup',schemaVersion:SCHEMA_VERSION,exportedAt:new Date().toISOString(),app:'日迹',data:migrate(data)}}
   function parseImport(text){const parsed=JSON.parse(text),payload=parsed.format==='riji-backup'?parsed.data:parsed;const data=migrate(payload);validate(data);return data}
   function restore(idValue){const item=backups().find(entry=>entry.id===idValue);if(!item)throw new Error('找不到该备份');const data=migrate(item.data);validate(data);localStorage.setItem(STORAGE_KEY,JSON.stringify(data));return data}
-  const SCENE_FIELDS=['sceneMaps','sceneTrees','sceneTree','regions','customScenes'];
+  function copySceneBranch(sourceMap,sourceTree,sourceKey,targetMap,targetTree,targetParent,keySeed=`copy_${Date.now().toString(36)}`){
+    if(!sourceMap?.[sourceKey]||!sourceTree?.[sourceKey])throw new Error('找不到要复制的场景');
+    if(!targetMap?.[targetParent]||!targetTree?.[targetParent])throw new Error('找不到目标父场景');
+    const keys=[];function collect(key){keys.push(key);(sourceTree[key]?.children||[]).forEach(collect)}collect(sourceKey);
+    const occupied=new Set(Object.keys(targetMap)),keyMap={};keys.forEach((key,index)=>{let candidate=`scene_${keySeed}_${index}`;while(occupied.has(candidate))candidate=`${candidate}_copy`;occupied.add(candidate);keyMap[key]=candidate});
+    keys.forEach(key=>{const cloned=clone(sourceMap[key]);cloned.options=(cloned.options||[]).filter(option=>option.kind!=='navigate'||keyMap[option.target]).map(option=>option.kind==='navigate'?{...option,target:keyMap[option.target]}:option);targetMap[keyMap[key]]=cloned;targetTree[keyMap[key]]={parent:key===sourceKey?targetParent:keyMap[sourceTree[key].parent],children:(sourceTree[key].children||[]).map(child=>keyMap[child])}});
+    targetMap[keyMap[sourceKey]].title=`${targetMap[keyMap[sourceKey]].title} 副本`;targetTree[targetParent].children.push(keyMap[sourceKey]);
+    return {rootKey:keyMap[sourceKey],keyMap};
+  }
+  const SCENE_FIELDS=['sceneMaps','sceneTrees','sceneTree','regions','archivedRegions','customScenes'];
   function sceneConfig(data){return Object.fromEntries(SCENE_FIELDS.map(field=>[field,clone(data[field])]))}
   function sameSceneConfig(left,right){return JSON.stringify(sceneConfig(left))===JSON.stringify(sceneConfig(right))}
   function merge(localInput,remoteInput){
@@ -101,5 +110,5 @@
     else timerConflict=local.sync.timerConflict||remote.sync.timerConflict||null;
     merged.activeTimer=clone(timerSource.activeTimer);merged.records=[...records.values()];merged.deletedRecordIds=deleted;merged.meta={createdAt:[local.meta.createdAt,remote.meta.createdAt].sort()[0],updatedAt:new Date(Math.max(localStamp,remoteStamp)).toISOString(),migratedFrom:Math.min(local.meta.migratedFrom||SCHEMA_VERSION,remote.meta.migratedFrom||SCHEMA_VERSION)};merged.sync={...older.sync,...newer.sync,revision:Math.max(local.sync.revision||0,remote.sync.revision||0)+1,sceneRevision:Math.max(localSceneRevision,remoteSceneRevision),sceneConflict,timerRevision:Math.max(localTimerRevision,remoteTimerRevision),timerConflict,lastSyncedAt:new Date().toISOString()};validate(merged);return merged;
   }
-  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,findRecordOverlaps,envelope,parseImport,createBackup,backups,restore,merge,clone};
+  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,findRecordOverlaps,copySceneBranch,envelope,parseImport,createBackup,backups,restore,merge,clone};
 })();
