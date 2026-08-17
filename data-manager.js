@@ -34,6 +34,18 @@
     for(const record of data.records){if(!/^\d{4}-\d{2}-\d{2}$/.test(record.date||''))throw new Error(`记录日期无效：${record.name||'未命名'}`);if(!/^\d{2}:\d{2}$/.test(record.start||'')||!/^\d{2}:\d{2}$/.test(record.end||''))throw new Error(`记录时间无效：${record.name||'未命名'}`)}
     return true;
   }
+  function localDate(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
+  function timeMinutes(value){const [hours,minutes]=value.split(':').map(Number);return hours*60+minutes}
+  function validateTimeWindow(date,start,end,now=new Date()){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')||!/^\d{2}:\d{2}$/.test(start||'')||!/^\d{2}:\d{2}$/.test(end||''))return'请填写完整有效的日期和时间';
+    const today=localDate(now),startMinutes=timeMinutes(start),endMinutes=timeMinutes(end),nowMinutes=now.getHours()*60+now.getMinutes();
+    if(date>today)return'不能记录尚未到来的日期';
+    if(date===today&&endMinutes<=startMinutes)return'今天的记录不能跨越尚未到来的午夜';
+    if(date===today&&startMinutes>nowMinutes)return'开始时间尚未到来';
+    if(date===today&&endMinutes>nowMinutes)return'结束时间尚未到来';
+    if(startMinutes===endMinutes)return'开始和结束时间不能相同';
+    return null;
+  }
   function backups(){try{return JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]')}catch{return[]}}
   function writeBackups(items){localStorage.setItem(BACKUP_KEY,JSON.stringify(items.slice(0,BACKUP_LIMIT)))}
   function createBackup(data,reason='manual'){
@@ -60,5 +72,5 @@
     const localStamp=Date.parse(local.meta.updatedAt||0)||0,remoteStamp=Date.parse(remote.meta.updatedAt||0)||0,newer=remoteStamp>localStamp?remote:local,older=newer===local?remote:local,merged=clone(newer);
     merged.records=[...records.values()];merged.deletedRecordIds=deleted;merged.regions=[...new Set([...local.regions,...remote.regions])];merged.meta={createdAt:[local.meta.createdAt,remote.meta.createdAt].sort()[0],updatedAt:new Date(Math.max(localStamp,remoteStamp)).toISOString(),migratedFrom:Math.min(local.meta.migratedFrom||SCHEMA_VERSION,remote.meta.migratedFrom||SCHEMA_VERSION)};merged.sync={...older.sync,...newer.sync,revision:Math.max(local.sync.revision||0,remote.sync.revision||0)+1,lastSyncedAt:new Date().toISOString()};validate(merged);return merged;
   }
-  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,envelope,parseImport,createBackup,backups,restore,merge,clone};
+  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,envelope,parseImport,createBackup,backups,restore,merge,clone};
 })();

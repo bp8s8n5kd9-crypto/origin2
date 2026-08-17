@@ -42,4 +42,11 @@ assert.deepEqual([...merged.regions].sort(),['上海','杭州'].sort());
 assert.ok(merged.deletedRecordIds.includes('remote-only'));
 assert.equal(merged.sync.revision,1);
 
+const currentTime=new Date(2026,7,17,18,42);
+assert.equal(data.validateTimeWindow('2026-08-17','18:00','19:00',currentTime),'结束时间尚未到来');
+assert.equal(data.validateTimeWindow('2026-08-17','21:00','21:30',currentTime),'开始时间尚未到来');
+assert.equal(data.validateTimeWindow('2026-08-18','09:00','10:00',currentTime),'不能记录尚未到来的日期');
+assert.equal(data.validateTimeWindow('2026-08-17','17:00','18:00',currentTime),null);
+assert.equal(data.validateTimeWindow('2026-08-16','23:30','00:30',currentTime),null);
+
 console.log('data-manager tests passed');
