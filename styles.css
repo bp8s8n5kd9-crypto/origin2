@@ -91,3 +91,11 @@ button:disabled,input:disabled,select:disabled{opacity:.58;cursor:not-allowed}
 .region-options button{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:42px;padding:8px 11px;border:0;background:transparent;color:#f1f3ef;text-align:left;cursor:pointer}
 .region-options button:hover,.region-options button[aria-selected="true"]{background:#303632}.region-options small{color:#b8c0ba;font-size:11px}
 @media(max-width:560px){.region-combobox{flex:1;min-width:0}.region-wrap>label{display:none}.region-options{min-width:190px}}
+
+/* Cloud sync */
+.sync-state b{font-weight:400}.sync-state[data-status="syncing"] span{background:#e8d9a8}.sync-state[data-status="error"] span{background:#ff8b82}.sync-state[data-status="offline"] span{background:#9da59f}
+.cloud-section{margin:24px 0;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cloud-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.cloud-heading h3{margin:0;font-size:15px}.cloud-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.cloud-login{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-top:16px}.cloud-login label{display:grid;gap:6px;font-size:12px}.cloud-login>div{display:flex;gap:8px}.cloud-login button{white-space:nowrap}
+.cloud-account{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}.cloud-account span{overflow-wrap:anywhere;color:#e8d9a8}
+@media(max-width:700px){.cloud-login{grid-template-columns:1fr}.cloud-login>div{display:grid;grid-template-columns:1fr 1fr}.cloud-account{align-items:flex-start;flex-direction:column}}

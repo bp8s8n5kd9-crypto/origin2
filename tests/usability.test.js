@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const cloud = fs.readFileSync(path.join(root, 'cloud-sync.js'), 'utf8');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
 const icon = fs.readFileSync(path.join(root, 'icons', 'sundial.svg'), 'utf8');
 
@@ -35,6 +36,11 @@ assert.match(app, /state\.records\|\|\[\]\)\.map\(record=>record\.region\)/, 're
 assert.match(html, /class="brand-mark"><img src="icons\/sundial\.svg"/, 'in-app brand must use the shared sundial icon');
 assert.match(icon, /中式赤道日晷/, 'the sundial asset needs a descriptive accessible title');
 assert.equal(manifest.icons[0].src, 'icons/sundial.svg', 'install icon must use the shared sundial asset');
+assert.match(html, /<script src="cloud-sync\.js"><\/script>\s*<script src="app\.js">/, 'cloud sync must load before the application');
+assert.match(html, /<input(?=[^>]*id="cloudEmail")(?=[^>]*type="email")[^>]*>/, 'cloud login needs a typed email field');
+assert.match(html, /<input(?=[^>]*id="cloudPassword")(?=[^>]*autocomplete="current-password")[^>]*>/, 'cloud password field needs password-manager support');
+assert.match(cloud, /on_conflict=user_id/, 'cloud writes must use a deterministic user-level upsert');
+assert.doesNotMatch(cloud, /service_role|sb_secret_/, 'browser code must never contain a Supabase secret key');
 
 function rgb(hex) {
   return [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);

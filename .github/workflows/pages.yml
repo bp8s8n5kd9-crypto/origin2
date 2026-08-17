@@ -28,6 +28,7 @@ jobs:
         run: |
           node --check app.js
           node --check data-manager.js
+          node --check cloud-sync.js
           node --check sw.js
       - name: Run tests
         run: |

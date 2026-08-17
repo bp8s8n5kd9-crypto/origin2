@@ -19,7 +19,7 @@
         <button class="nav-item" data-page="summary"><span>◫</span>月度汇总</button>
         <button class="nav-item" data-page="editor"><span>⌘</span>场景管理</button>
       </nav>
-      <div class="sync-state"><span></span>已保存在此设备</div>
+      <div class="sync-state" id="syncState"><span></span><b>已保存在此设备</b></div>
     </aside>
 
     <main>
@@ -185,6 +185,11 @@
       <span class="dialog-label">数据管理</span><h2>备份与迁移</h2>
       <div class="data-stats" id="dataStats"></div>
       <div class="data-actions"><button type="button" class="secondary" id="exportJson">导出 JSON</button><button type="button" class="secondary" id="exportCsv">导出 CSV</button><button type="button" class="secondary" id="chooseImport">导入 JSON</button><button type="button" class="secondary" id="createBackup">立即备份</button></div>
+      <section class="cloud-section">
+        <div class="cloud-heading"><div><h3>跨设备同步</h3><p id="cloudSummary">尚未连接云端账户</p></div><button type="button" class="secondary hidden" id="syncNow">立即同步</button></div>
+        <div class="cloud-login" id="cloudLogin"><label>邮箱<input type="email" id="cloudEmail" autocomplete="email"></label><label>密码<input type="password" id="cloudPassword" autocomplete="current-password" minlength="8"></label><div><button type="button" class="secondary" id="cloudSignup">创建账户</button><button type="button" class="primary" id="cloudSignin">登录</button></div></div>
+        <div class="cloud-account hidden" id="cloudAccount"><span id="cloudUser"></span><button type="button" class="secondary" id="cloudSignout">退出云同步</button></div>
+      </section>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
       <div class="import-preview hidden" id="importPreview"><strong>待导入数据</strong><p id="importSummary"></p><button type="button" class="primary" id="applyImport">确认覆盖当前数据</button></div>
       <div class="backup-list"><h3>本地备份</h3><div id="backupList"></div></div>
@@ -220,6 +225,7 @@
   </svg>
   <div class="toast" id="toast"></div>
   <script src="data-manager.js"></script>
+  <script src="cloud-sync.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
