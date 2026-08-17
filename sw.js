@@ -1,8 +1,8 @@
-const CACHE_NAME='riji-shell-v7';
+const CACHE_NAME='riji-shell-v8';
 const APP_SHELL=['./','./index.html','./styles.css','./data-manager.js','./cloud-sync.js','./app.js','./manifest.webmanifest','./icons/sundial.svg'];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)));
 });
 
 self.addEventListener('activate',event=>{
@@ -10,10 +10,11 @@ self.addEventListener('activate',event=>{
 });
 
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET')return;
+  if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;
   event.respondWith(fetch(event.request).then(response=>{
-    const copy=response.clone();
-    caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
+    if(response.ok){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy))}
     return response;
   }).catch(()=>caches.match(event.request).then(cached=>cached||(event.request.mode==='navigate'?caches.match('./index.html'):Response.error()))));
 });
+
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting()});

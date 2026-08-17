@@ -42,7 +42,7 @@
       emit('ready','已同步');return {changed,data:normalized};
     }catch(error){emit(navigator.onLine?'error':'offline',navigator.onLine?'同步失败':'等待联网');if(error.status===401){writeSession(null);emit('signed-out','登录已失效')}throw error}finally{syncing=false}
   }
-  function schedule(provider,onRemoteChange){clearTimeout(syncTimer);if(!session())return;syncTimer=setTimeout(async()=>{try{const result=await sync(provider());if(result.changed)onRemoteChange?.(result.data)}catch{}},1800)}
+  function schedule(provider,onRemoteChange){clearTimeout(syncTimer);if(!session())return;if(!navigator.onLine){emit('offline','离线保存，联网后同步');return}syncTimer=setTimeout(async()=>{try{const result=await sync(provider());if(result.changed)onRemoteChange?.(result.data)}catch{}},1800)}
   function signOut(){writeSession(null);emit('signed-out','仅保存在此设备')}
   async function calibrate(){try{await request('/auth/v1/settings',{headers:headers(null)});return clock()}catch{return clock()}}
   function now(){return new Date(Date.now()+clockOffsetMs)}

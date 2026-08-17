@@ -41,6 +41,13 @@ assert.match(app, /RijiData\.filterRecords/, 'record browsing must use the teste
 assert.match(app, /before-batch-record-delete/, 'batch deletion must create a recovery backup');
 assert.match(app, /state\.deletedRecordIds=.*deleted/, 'batch deletion must create cloud tombstones');
 assert.match(app, /map\(record=>record\.id\)/, 'batch tombstones must preserve original record id types');
+assert.match(html, /id="connectionNotice"[^>]*aria-live="polite"/, 'offline state needs a visible announced notice');
+assert.match(html, /id="updateNotice"/, 'installed apps need a controlled update prompt');
+assert.match(app, /addEventListener\('online'/, 'cloud sync must recover after connectivity returns');
+assert.match(app, /activeTimer.*先结束或暂停当前计时/, 'application updates must not interrupt an active timer');
+const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+assert.match(serviceWorker, /origin!==self\.location\.origin/, 'service worker must not cache cross-origin personal data');
+assert.match(serviceWorker, /SKIP_WAITING/, 'service worker updates must wait for explicit user action');
 assert.match(app, /state\.records\|\|\[\]\)\.map\(record=>record\.region\)/, 'regions from historical records must be recovered');
 assert.match(html, /class="brand-mark"><img src="icons\/sundial\.svg"/, 'in-app brand must use the shared sundial icon');
 assert.match(icon, /中式赤道日晷/, 'the sundial asset needs a descriptive accessible title');
