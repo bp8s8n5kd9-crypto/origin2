@@ -34,6 +34,12 @@ jobs:
         run: |
           node tests/data-manager.test.js
           node tests/usability.test.js
+      - name: Install browser test dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Run browser flows
+        run: npm run test:e2e
 
   deploy:
     needs: test

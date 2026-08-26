@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "node tests/data-manager.test.js && node tests/usability.test.js",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

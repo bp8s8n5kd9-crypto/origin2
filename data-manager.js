@@ -49,6 +49,10 @@
     const byRegion=new Map();(records||[]).forEach(record=>{const day=new Date(`${record.date}T00:00:00`).getTime(),start=day+timeMinutes(record.start)*60000;let end=day+timeMinutes(record.end)*60000;if(end<=start)end+=24*60*60000;const region=record.region||'上海',items=byRegion.get(region)||[];items.push({record,start,end});byRegion.set(region,items)});
     const overlaps=[];byRegion.forEach((items,region)=>{items.sort((a,b)=>a.start-b.start||a.end-b.end);for(let i=0;i<items.length;i++){for(let j=i+1;j<items.length&&items[j].start<items[i].end;j++){const minutes=Math.round((Math.min(items[i].end,items[j].end)-items[j].start)/60000);if(minutes>0)overlaps.push({region,minutes,first:clone(items[i].record),second:clone(items[j].record)})}}});return overlaps;
   }
+  function coveredMinutes(records){
+    const days=new Map();(records||[]).forEach(record=>{const start=timeMinutes(record.start),rawEnd=timeMinutes(record.end),end=Math.min(1440,rawEnd<=start?1440:rawEnd),items=days.get(record.date)||[];if(end>start)items.push([start,end]);days.set(record.date,items)});
+    let total=0;days.forEach(items=>{items.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);let start=null,end=null;items.forEach(item=>{if(start===null){[start,end]=item}else if(item[0]<=end)end=Math.max(end,item[1]);else{total+=end-start;[start,end]=item}});if(start!==null)total+=end-start});return total;
+  }
   function filterRecords(records,filters={}){
     const query=String(filters.query||'').trim().toLocaleLowerCase(),from=filters.from||'',to=filters.to||'',region=filters.region||'',nature=filters.nature||'';
     return (records||[]).filter(record=>{
@@ -120,5 +124,5 @@
     else timerConflict=local.sync.timerConflict||remote.sync.timerConflict||null;
     merged.activeTimer=clone(timerSource.activeTimer);merged.records=[...records.values()];merged.deletedRecordIds=deleted;merged.meta={createdAt:[local.meta.createdAt,remote.meta.createdAt].sort()[0],updatedAt:new Date(Math.max(localStamp,remoteStamp)).toISOString(),migratedFrom:Math.min(local.meta.migratedFrom||SCHEMA_VERSION,remote.meta.migratedFrom||SCHEMA_VERSION)};merged.sync={...older.sync,...newer.sync,revision:Math.max(local.sync.revision||0,remote.sync.revision||0)+1,sceneRevision:Math.max(localSceneRevision,remoteSceneRevision),sceneConflict,timerRevision:Math.max(localTimerRevision,remoteTimerRevision),timerConflict,lastSyncedAt:new Date().toISOString()};validate(merged);return merged;
   }
-  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,findRecordOverlaps,filterRecords,copySceneBranch,envelope,parseImport,createBackup,backups,restore,merge,clone};
+  window.RijiData={SCHEMA_VERSION,STORAGE_KEY,load,save,validate,validateTimeWindow,splitTimeWindow,findRecordOverlaps,coveredMinutes,filterRecords,copySceneBranch,envelope,parseImport,createBackup,backups,restore,merge,clone};
 })();

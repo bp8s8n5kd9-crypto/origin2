@@ -119,4 +119,11 @@ const filtered=data.filterRecords([
 ],{from:'2026-08-10',to:'2026-08-11',region:'上海',nature:'positive',query:'外部'});
 assert.deepEqual(filtered.map(record=>record.id),['3']);
 
+assert.equal(data.coveredMinutes([
+  {date:'2026-08-17',start:'09:00',end:'10:00'},
+  {date:'2026-08-17',start:'09:30',end:'10:30'},
+  {date:'2026-08-17',start:'11:00',end:'11:15'},
+  {date:'2026-08-18',start:'09:00',end:'09:30'}
+]),135);
+
 console.log('data-manager tests passed');
